@@ -77,4 +77,3 @@ for i in element_list:
 # save into file
 df = pd.DataFrame(jobs,columns = ["job_title","company_name","number_employees","salary","job_details"])
 df.to_csv("linkedin_dataset.csv",encoding='utf-8-sig')
-
