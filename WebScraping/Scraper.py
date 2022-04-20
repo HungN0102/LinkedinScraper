@@ -104,12 +104,21 @@ class LinkedinScraper:
                 # Extract relevant data
                 soup = self.get_soup()
                 current_url = self.driver.current_url
-                job_title = soup.find('h2', class_='t-24 t-bold').text
-                company_name = soup.find('span', class_='jobs-unified-top-card__company-name').text
-                no_employees = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[1].text
-                job_details = soup.find('div', class_='jobs-box__html-content jobs-description-content__text t-14 t-normal jobs-description-content__text--stretch').text
+
+                job_title = soup.find('h2', class_='t-24 t-bold')
+                job_title = job_title.get_text(separator=" ").strip()
+
+                company_name = soup.find('span', class_='jobs-unified-top-card__company-name')
+                company_name = company_name.get_text(separator=" ").strip()
+
+                no_employees = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[1]
+                no_employees = no_employees.get_text(separator=" ").strip()
+
+                job_details = soup.find('div', class_='jobs-box__html-content jobs-description-content__text t-14 t-normal jobs-description-content__text--stretch')
+                job_details = job_details.get_text(separator=" ").strip()
                 try:
-                    salary = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[0].text
+                    salary = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[0]
+                    salary = salary.get_text(separator=" ").strip()
                 except:
                     salary = None
                 rows = [current_url, job_title, company_name, no_employees, salary, job_details]
@@ -157,7 +166,7 @@ class LinkedinScraper:
         time.sleep(1)
 
         # Go to each page and scrape it
-        for i in range(2, 42):
+        for i in range(2, 15):
             self.scroll_down()
             self.get_data()
             self.get_page(i)
