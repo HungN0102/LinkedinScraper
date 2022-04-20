@@ -20,10 +20,11 @@ class LinkedinScraper:
         self.password = parser.get(account, "pass")
         self.link = link
         self.li_class = li_class
+        self.driver = None
         self.soup = None
         self.jobs = []
         self.errors = 0
-        self.driver = None
+        self.warnings = []
 
     def logging_in(self):
         # Connecting to Linkedin
@@ -116,15 +117,19 @@ class LinkedinScraper:
                 # Append to jobs list
                 self.jobs.append(rows)
 
+                number_of_jobs = len(self.jobs)
+                if number_of_jobs % 50 == 0:
+                    print(f"Successfully extracted {number_of_jobs} number of job posts")
 
             except Exception as e:
-                # Print out errors if needed
-                print(f"Error number {self.errors}")
-                print(e)
-                print(f"Current have {len(self.jobs)}")
-                print("")
-                print("_____________________________________________________________")
+                # Count errors
                 self.errors += 1
+
+                # Error type
+                warning = [self.errors,e]
+
+                # Add to list of warning errors
+                self.warnings.append(warning)
 
     def get_page(self,page, ul="artdeco-pagination__pages artdeco-pagination__pages--number", li="data-test-pagination-page-btn"):
         # Page number
@@ -159,7 +164,6 @@ if __name__ == "__main__":
     job_site = "https://www.linkedin.com/jobs/search/?currentJobId=3023550702&geoId=90009496&keywords=%22data%20engineer%22&location=London%20Area%2C%20United%20Kingdom&refresh=true"
     li_class = "jobs-search-results__list-item occludable-update p0 relative scaffold-layout__list-item ember-view"
     bot = LinkedinScraper(account,job_site,li_class)
-
     bot.scrape()
 
 
