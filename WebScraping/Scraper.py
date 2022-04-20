@@ -119,7 +119,11 @@ class LinkedinScraper:
 
             except Exception as e:
                 # Print out errors if needed
-                print(e, self.errors)
+                print(f"Error number {self.errors}")
+                print(e)
+                print(f"Current have {len(self.jobs)}")
+                print("")
+                print("_____________________________________________________________")
                 self.errors += 1
 
     def get_page(self,page, ul="artdeco-pagination__pages artdeco-pagination__pages--number", li="data-test-pagination-page-btn"):
@@ -138,22 +142,26 @@ class LinkedinScraper:
             elementID = self.driver.find_element_by_id(id)
             elementID.click()
 
+    def scrape(self):
+        self.logging_in()
+        time.sleep(1)
+
+        self.scraped_site()
+        time.sleep(1)
+
+        for i in range(2, 42):
+            self.scroll_down()
+            self.get_data()
+            self.get_page(i)
+
 if __name__ == "__main__":
     account = "account1"
     job_site = "https://www.linkedin.com/jobs/search/?currentJobId=3023550702&geoId=90009496&keywords=%22data%20engineer%22&location=London%20Area%2C%20United%20Kingdom&refresh=true"
     li_class = "jobs-search-results__list-item occludable-update p0 relative scaffold-layout__list-item ember-view"
-
     bot = LinkedinScraper(account,job_site,li_class)
 
-    bot.logging_in()
-    time.sleep(1)
+    bot.scrape()
 
-    bot.scraped_site()
-    time.sleep(1)
-
-    for i in range(2,42):
-        bot.scroll_down()
-        bot.get_data()
-        bot.get_page(i)
 
 df = pd.DataFrame(bot.jobs, columns = ["url","job_title","company_name" ,"number_employees" ,"salary" ,"job_details"])
+# df.to_csv("linkedin_dataset.csv", encoding='utf-8-sig')
