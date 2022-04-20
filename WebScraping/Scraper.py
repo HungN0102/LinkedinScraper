@@ -172,7 +172,3 @@ if __name__ == "__main__":
 
 df = pd.DataFrame(bot.jobs, columns = ["url","job_title","company_name" ,"number_employees" ,"salary" ,"job_details"])
 # df.to_csv("linkedin_dataset.csv", encoding='utf-8-sig')
-
-len(bot.jobs)
-
-bot.warnings
