@@ -141,7 +141,7 @@ class LinkedinScraper:
             elementID = self.driver.find_element_by_id(id)
             elementID.click()
         except:
-            # Get to "..." button
+            # Click "..." button
             all_id = m.find_all("li")
             id = all_id[8]["id"]
             elementID = self.driver.find_element_by_id(id)
