@@ -119,7 +119,7 @@ class LinkedinScraper:
 
                 number_of_jobs = len(self.jobs)
                 if number_of_jobs % 50 == 0:
-                    print(f"Successfully extracted {number_of_jobs} number of job posts")
+                    print(f"Total number of jobs extracted: {number_of_jobs}")
 
             except Exception as e:
                 # Count errors
