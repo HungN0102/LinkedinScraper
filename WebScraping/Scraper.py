@@ -54,6 +54,7 @@ class LinkedinScraper:
         self.driver.maximize_window()
 
     def get_soup(self):
+        # Get bs4 soup
         src = self.driver.page_source
         soup = BeautifulSoup(src, 'html.parser')
         return soup
@@ -107,11 +108,7 @@ class LinkedinScraper:
                 company_name = soup.find('span', class_='jobs-unified-top-card__company-name').text
                 no_employees = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[1].text
                 job_details = soup.find('div', class_='jobs-box__html-content jobs-description-content__text t-14 t-normal jobs-description-content__text--stretch').text
-                salary = soup.find('div', class_="mt4")
-
-                # Salary is optional
-                if type(salary) == Tag:
-                    salary = salary.text
+                salary = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[0].text
                 rows = [current_url, job_title, company_name, no_employees, salary, job_details]
 
                 # Append to jobs list
@@ -148,12 +145,15 @@ class LinkedinScraper:
             elementID.click()
 
     def scrape(self):
+        # Initializing the scraper
         self.logging_in()
         time.sleep(1)
 
+        # Going to the site
         self.scraped_site()
         time.sleep(1)
 
+        # Go to each page and scrape it
         for i in range(2, 42):
             self.scroll_down()
             self.get_data()
