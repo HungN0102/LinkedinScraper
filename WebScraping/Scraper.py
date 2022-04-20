@@ -74,6 +74,7 @@ class LinkedinScraper:
             self.driver.refresh()
             time.sleep(2)
 
+        # Scrolling to view
         running = True
         count = 0
         while running:
@@ -88,35 +89,50 @@ class LinkedinScraper:
                 running = False
 
     def get_data(self):
+        # List of posts
         element_list = self.soup.find_all("li",class_=li_class)
         for i in element_list:
+
+            # Click on each post
             id = i.find("div", class_="full-width artdeco-entity-lockup__title ember-view")["id"]
             elementID = self.driver.find_element_by_id(id)
             elementID.click()
             time.sleep(5 + random.random() * 2)
             try:
+                # Extract relevant data
                 soup = self.get_soup()
+                current_url = self.driver.current_url
                 job_title = soup.find('h2', class_='t-24 t-bold').text
                 company_name = soup.find('span', class_='jobs-unified-top-card__company-name').text
                 no_employees = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[1].text
                 job_details = soup.find('div', class_='jobs-box__html-content jobs-description-content__text t-14 t-normal jobs-description-content__text--stretch').text
                 salary = soup.find('div', class_="mt4")
+
+                # Salary is optional
                 if type(salary) == Tag:
                     salary = salary.text
-                rows = [job_title, company_name, no_employees, salary, job_details]
+                rows = [current_url, job_title, company_name, no_employees, salary, job_details]
+
+                # Append to jobs list
                 self.jobs.append(rows)
+
+
             except Exception as e:
+                # Print out errors if needed
                 print(e, self.errors)
                 self.errors += 1
 
     def get_page(self,page, ul="artdeco-pagination__pages artdeco-pagination__pages--number", li="data-test-pagination-page-btn"):
+        # Page number
         page = str(page)
         m = self.soup.find("ul", class_=ul)
         try:
+            # Get to next page
             id = m.find("li", {li: page})["id"]
             elementID = self.driver.find_element_by_id(id)
             elementID.click()
         except:
+            # Get to "..." button
             all_id = m.find_all("li")
             id = all_id[8]["id"]
             elementID = self.driver.find_element_by_id(id)
@@ -140,4 +156,4 @@ if __name__ == "__main__":
         bot.get_data()
         bot.get_page(i)
 
-df = pd.DataFrame(bot.jobs, columns = ["job_title","company_name" ,"number_employees" ,"salary" ,"job_details"])
+df = pd.DataFrame(bot.jobs, columns = ["url","job_title","company_name" ,"number_employees" ,"salary" ,"job_details"])
