@@ -108,7 +108,10 @@ class LinkedinScraper:
                 company_name = soup.find('span', class_='jobs-unified-top-card__company-name').text
                 no_employees = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[1].text
                 job_details = soup.find('div', class_='jobs-box__html-content jobs-description-content__text t-14 t-normal jobs-description-content__text--stretch').text
-                salary = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[0].text
+                try:
+                    salary = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[0].text
+                except:
+                    salary = None
                 rows = [current_url, job_title, company_name, no_employees, salary, job_details]
 
                 # Append to jobs list
@@ -169,3 +172,7 @@ if __name__ == "__main__":
 
 df = pd.DataFrame(bot.jobs, columns = ["url","job_title","company_name" ,"number_employees" ,"salary" ,"job_details"])
 # df.to_csv("linkedin_dataset.csv", encoding='utf-8-sig')
+
+len(bot.jobs)
+
+bot.warnings
