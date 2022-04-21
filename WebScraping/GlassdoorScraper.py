@@ -43,32 +43,32 @@ class GlassdoorScraper:
             soup = self.get_soup(self.URL)
             matches = soup.find_all('li', class_=li_class)
             for match in matches:
-                    company = match.find("div", class_=company_class)
-                    company = company.get_text(separator=" ").strip()
+                company = match.find("div", class_=company_class)
+                company = company.get_text(separator=" ").strip()
 
-                    job_title = match.find("a", class_=job_class)
-                    job_title = job_title.get_text(separator=" ").strip()
+                job_title = match.find("a", class_=job_class)
+                job_title = job_title.get_text(separator=" ").strip()
 
-                    location = match.find("span", class_=location_class)
-                    location = location.get_text(separator=" ").strip()
+                location = match.find("span", class_=location_class)
+                location = location.get_text(separator=" ").strip()
 
-                    old = match.find("div", class_=old_class)
-                    old = old.get_text(separator=" ").strip()
+                old = match.find("div", class_=old_class)
+                old = old.get_text(separator=" ").strip()
+
                 try:
                     salary = match.find("span", {"data-test": salary_class})
                     salary = salary.get_text(separator=" ").strip()
                 except Exception as e:
                     self.warnings.append(e)
-                    self.full_link = self.get_link(match.find("a", class_=job_class))
-                    soup2 = self.get_soup(self.full_link)
 
-                    job_details = soup2.find("div", class_=detail_class).get_text(separator=" ").strip()
-
-                    self.rows.append([self.full_link, job_title, company, location, old, salary, job_details])
+                self.full_link = self.get_link(match.find("a", class_=job_class))
+                soup2 = self.get_soup(self.full_link)
+                job_details = soup2.find("div", class_=detail_class).get_text(separator=" ").strip()
+                self.rows.append([self.full_link, job_title, company, location, old, salary, job_details])
 
             print(len(self.rows))
 if __name__ == "__main__":
-    url = "https://www.glassdoor.co.uk/Job/uk-software-engineer-jobs-SRCH_IL.0,2_IN2_KO3,20.htm"
+    url = "https://www.glassdoor.co.uk/Job/london-marketing-jobs-SRCH_IL.0,6_IC2671300_KO7,16.htm"
     pages = 25
 
     bot = GlassdoorScraper(url,pages)
@@ -77,5 +77,3 @@ if __name__ == "__main__":
     df = pd.DataFrame(bot.rows, columns = ["url", "job_title", "company_name", "location", "old", "salary", "job_details"])
 
 # df.to_csv("glassdoor_swe.csv", encoding='utf-8-sig')
-
-bot.rows
