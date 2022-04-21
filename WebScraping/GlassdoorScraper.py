@@ -11,6 +11,7 @@ class GlassdoorScraper:
         self.URL = None
         self.rows = []
         self.warnings = []
+        self.full_link = None
 
     def get_soup(self,url):
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
@@ -31,7 +32,7 @@ class GlassdoorScraper:
                  location_class="css-1buaf54 pr-xxsm job-search-key-iii9i8 e1rrn5ka4",
                  old_class = "d-flex align-items-end pl-std css-17n8uzw",
                  salary_class = "detailSalary",
-                 detail_class = "css-1yuy9gt ecgq1xb3"):
+                 detail_class = "css-1yuy9gt ecgq1xb4"):
 
         for i in range(2, self.pages + 1):
             if i == 1:
@@ -42,7 +43,6 @@ class GlassdoorScraper:
             soup = self.get_soup(self.URL)
             matches = soup.find_all('li', class_=li_class)
             for match in matches:
-                try:
                     company = match.find("div", class_=company_class)
                     company = company.get_text(separator=" ").strip()
 
@@ -54,27 +54,28 @@ class GlassdoorScraper:
 
                     old = match.find("div", class_=old_class)
                     old = old.get_text(separator=" ").strip()
-
+                try:
                     salary = match.find("span", {"data-test": salary_class})
                     salary = salary.get_text(separator=" ").strip()
-
-                    full_link = self.get_link(match.find("a", class_=job_class))
-                    soup2 = self.get_soup(full_link)
+                except Exception as e:
+                    self.warnings.append(e)
+                    self.full_link = self.get_link(match.find("a", class_=job_class))
+                    soup2 = self.get_soup(self.full_link)
 
                     job_details = soup2.find("div", class_=detail_class).get_text(separator=" ").strip()
 
-                    self.rows.append([full_link, job_title, company, location, old, salary, job_details])
-                except Exception as e:
-                    self.warnings.append(e)
+                    self.rows.append([self.full_link, job_title, company, location, old, salary, job_details])
 
             print(len(self.rows))
 if __name__ == "__main__":
-    url = "https://www.glassdoor.co.uk/Job/london-data-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,19.htm"
-    pages = 30
+    url = "https://www.glassdoor.co.uk/Job/uk-software-engineer-jobs-SRCH_IL.0,2_IN2_KO3,20.htm"
+    pages = 25
 
     bot = GlassdoorScraper(url,pages)
-    bot.get_data()
+    bot.get_data(detail_class="css-1yuy9gt ecgq1xb4")
 
     df = pd.DataFrame(bot.rows, columns = ["url", "job_title", "company_name", "location", "old", "salary", "job_details"])
 
-df.to_csv("glassdoor_dataanalyst.csv", encoding='utf-8-sig')
+# df.to_csv("glassdoor_swe.csv", encoding='utf-8-sig')
+
+bot.rows

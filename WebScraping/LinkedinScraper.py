@@ -25,6 +25,9 @@ class LinkedinScraper:
         self.jobs = []
         self.errors = 0
         self.warnings = []
+        self.start_time = time.time()
+        self.end_time = None
+        self.total_time = None
 
     def logging_in(self):
         # Connecting to Linkedin
@@ -68,13 +71,13 @@ class LinkedinScraper:
         soup = self.get_soup()
         matches = soup.find_all("li", class_= self.li_class)
         count = 0
-        while len(matches) == 0 and count <= 10:
+        while len(matches) == 0 and count <= 4:
             soup = self.get_soup()
             matches = soup.find_all("li", class_=self.li_class)
 
             count += 1
             self.driver.refresh()
-            time.sleep(2)
+            time.sleep(5)
 
         # Scrolling to view
         running = True
@@ -104,23 +107,41 @@ class LinkedinScraper:
                 # Extract relevant data
                 soup = self.get_soup()
                 current_url = self.driver.current_url
+                try:
+                    job_title = soup.find('h2', class_='t-24 t-bold')
+                    job_title = job_title.get_text(separator=" ").strip()
+                except:
+                    job_title = None
+                    print("job_title")
 
-                job_title = soup.find('h2', class_='t-24 t-bold')
-                job_title = job_title.get_text(separator=" ").strip()
+                try:
+                    company_name = soup.find('span', class_='jobs-unified-top-card__company-name')
+                    company_name = company_name.get_text(separator=" ").strip()
+                except:
+                    company_name = None
+                    print("company_name")
 
-                company_name = soup.find('span', class_='jobs-unified-top-card__company-name')
-                company_name = company_name.get_text(separator=" ").strip()
+                try:
+                    no_employees = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[1]
+                    no_employees = no_employees.get_text(separator=" ").strip()
+                except:
+                    no_employees = None
+                    print("no_employees")
 
-                no_employees = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[1]
-                no_employees = no_employees.get_text(separator=" ").strip()
+                try:
+                    job_details = soup.find('div', class_='jobs-box__html-content jobs-description-content__text t-14 t-normal jobs-description-content__text--stretch')
+                    job_details = job_details.get_text(separator=" ").strip()
+                except:
+                    job_details = None
+                    print("job_details")
 
-                job_details = soup.find('div', class_='jobs-box__html-content jobs-description-content__text t-14 t-normal jobs-description-content__text--stretch')
-                job_details = job_details.get_text(separator=" ").strip()
                 try:
                     salary = soup.find_all('li', class_='jobs-unified-top-card__job-insight')[0]
                     salary = salary.get_text(separator=" ").strip()
                 except:
                     salary = None
+                    print("salary")
+
                 rows = [current_url, job_title, company_name, no_employees, salary, job_details]
 
                 # Append to jobs list
@@ -165,19 +186,23 @@ class LinkedinScraper:
         self.scraped_site()
         time.sleep(1)
 
-        # Go to each page and scrape it
-        for i in range(2, 15):
+        #Go to each page and scrape it
+        for i in range(2, 41):
             self.scroll_down()
             self.get_data()
             self.get_page(i)
+
+        self.end_time = time.time()
+        self.total_time = self.end_time - self.start_time
 
 if __name__ == "__main__":
     account = "account1"
     job_site = "https://www.linkedin.com/jobs/search/?currentJobId=3023550702&geoId=90009496&keywords=%22data%20engineer%22&location=London%20Area%2C%20United%20Kingdom&refresh=true"
     li_class = "jobs-search-results__list-item occludable-update p0 relative scaffold-layout__list-item ember-view"
-    bot = LinkedinScraper(account,job_site,li_class)
+    bot = LinkedinScraper(account, job_site, li_class)
     bot.scrape()
 
 
 df = pd.DataFrame(bot.jobs, columns = ["url","job_title","company_name" ,"number_employees" ,"salary" ,"job_details"])
-# df.to_csv("linkedin_dataset.csv", encoding='utf-8-sig')
+# df.to_csv("linkedin_dataengineer.csv", encoding='utf-8-sig')
+
