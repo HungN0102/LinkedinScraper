@@ -5,13 +5,18 @@ import pandas as pd
 import time
 
 class GlassdoorScraper:
-    def __init__(self,url):
+    def __init__(self, url, file_tosave, pages, to_save):
         self.url = url
+        self.file_tosave = file_tosave
+        self.pages = pages
+        self.to_save = to_save
+
         self.URL = None
         self.rows = []
         self.warnings = []
         self.full_link = None
         self.driver = None
+        self.df = None
 
     def open_website(self):
         PATH = "C:\Program Files (x86)\chromedriver.exe"
@@ -84,26 +89,49 @@ class GlassdoorScraper:
 
             print(len(self.rows))
 
+    def run_me(self):
+        print("Starting")
+        self.open_website()
+
+        for i in range(self.pages):
+            self.get_data()
+            self.next_page()
+
+        self.df = pd.DataFrame(self.rows, columns=["url", "job_title", "company_name", "location", "old", "salary", "job_details"])
+        if self.to_save:
+            self.df.to_csv(self.file_tosave, encoding='utf-8-sig')
+            
+        self.driver.close()
+        print("Finished")
+
 if __name__ == "__main__":
-    url = "https://www.glassdoor.co.uk/Job/london-data-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,20.htm"
-    pages = 25
-    print("Starting")
-    bot = GlassdoorScraper(url)
-    bot.open_website()
+    urls = ["https://www.glassdoor.co.uk/Job/london-data-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,19.htm",
+            "https://www.glassdoor.co.uk/Job/london-data-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,20.htm",
+            "https://www.glassdoor.co.uk/Job/london-backend-developer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm",
+            "https://www.glassdoor.co.uk/Job/london-business-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,23.htm",
+            "https://www.glassdoor.co.uk/Job/london-software-engineering-jobs-SRCH_IL.0,6_IC2671300_KO7,27.htm",
+            "https://www.glassdoor.co.uk/Job/london-marketing-jobs-SRCH_IL.0,6_IC2671300_KO7,16.htm",
+            "https://www.glassdoor.co.uk/Job/london-internal-audit-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm",
+            "https://www.glassdoor.co.uk/Job/london-equity-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm",
+            "https://www.glassdoor.co.uk/Job/london-accountant-jobs-SRCH_IL.0,6_IC2671300_KO7,17.htm",
+            "https://www.glassdoor.co.uk/Job/london-data-scientist-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm"]
+    file_tosaves = ["glassdoor_dataanalyst.csv",
+                   "glassdoor_dataengineer.csv",
+                   "glassdoor_backend.csv",
+                   "glassdoor_businessanalyst.csv",
+                   "glassdoor_swe.csv",
+                   "glassdoor_marketing.csv",
+                   "glassdoor_internalaudit.csv",
+                   "glassdoor_equityanalyst.csv",
+                   "glassdoor_accountant.csv",
+                   "glassdoor_datascientist.csv"]
 
-    for i in range(pages):
-        bot.get_data(detail_class="css-1yuy9gt ecgq1xb4")
-        bot.next_page()
+    url_to_file_lists = [(x, y, 6, True) for x, y in zip(urls, file_tosaves)]
 
-    df = pd.DataFrame(bot.rows, columns = ["url", "job_title", "company_name", "location", "old", "salary", "job_details"])
-    print("Finished")
+    for url, file, page, to_save in url_to_file_lists:
+        bot = GlassdoorScraper(url, file, page, to_save)
+        bot.run_me()
 
 # df.to_csv("glassdoor_accountant.csv", encoding='utf-8-sig')
 
-# soup = bot.get_soup()
-# matches = soup.find_all('li', class_='react-job-listing')
-# match = matches[0]
-#
-# match.find("span", class_="css-1buaf54").text
-
-df
+# bot.df.drop_duplicates(["job_title","company_name"])

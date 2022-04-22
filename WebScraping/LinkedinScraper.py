@@ -102,7 +102,7 @@ class LinkedinScraper:
             id = i.find("div", class_="full-width artdeco-entity-lockup__title ember-view")["id"]
             elementID = self.driver.find_element_by_id(id)
             elementID.click()
-            time.sleep(5 + random.random() * 2)
+            time.sleep(3 + random.random() * 2)
             try:
                 # Extract relevant data
                 soup = self.get_soup()
@@ -197,12 +197,13 @@ class LinkedinScraper:
 
 if __name__ == "__main__":
     account = "account1"
-    job_site = "https://www.linkedin.com/jobs/search/?currentJobId=3023550702&geoId=90009496&keywords=%22data%20engineer%22&location=London%20Area%2C%20United%20Kingdom&refresh=true"
+    job_site = "https://www.linkedin.com/jobs/search/?currentJobId=3036612344&geoId=101165590&keywords=%22backend%22&location=United%20Kingdom&refresh=true"
     li_class = "jobs-search-results__list-item occludable-update p0 relative scaffold-layout__list-item ember-view"
     bot = LinkedinScraper(account, job_site, li_class)
     bot.scrape()
 
 
 df = pd.DataFrame(bot.jobs, columns = ["url","job_title","company_name" ,"number_employees" ,"salary" ,"job_details"])
-# df.to_csv("linkedin_dataengineer.csv", encoding='utf-8-sig')
+# df.to_csv("linkedin_backend.csv", encoding='utf-8-sig')
 
+df["salary"]
