@@ -3,6 +3,7 @@ import requests
 from selenium import webdriver
 import pandas as pd
 import time
+from datetime import date
 
 class GlassdoorScraper:
     def __init__(self, url, file_tosave, pages, to_save):
@@ -17,6 +18,7 @@ class GlassdoorScraper:
         self.full_link = None
         self.driver = None
         self.df = None
+        self.today = date.today().strftime("%d/%m/%Y")
 
     def open_website(self):
         PATH = "C:\Program Files (x86)\chromedriver.exe"
@@ -97,7 +99,7 @@ class GlassdoorScraper:
             self.full_link = self.get_link(match.find("a",{"data-test":job_class}))
             soup2 = self.get_soup4(self.full_link)
             job_details = soup2.find("div", class_=detail_class).get_text(separator=" ").strip()
-            self.rows.append([self.full_link, job_title, company, location, old, salary, job_details])
+            self.rows.append([self.today, self.full_link, job_title, company, location, old, salary, job_details])
 
             print(len(self.rows))
 
@@ -109,7 +111,7 @@ class GlassdoorScraper:
             self.get_data()
             self.next_page()
 
-        self.df = pd.DataFrame(self.rows, columns=["url", "job_title", "company_name", "location", "old", "salary", "job_details"])
+        self.df = pd.DataFrame(self.rows, columns=["date","url", "job_title", "company_name", "location", "old", "salary", "job_details"])
         if self.to_save:
             self.df.to_csv(self.file_tosave, encoding='utf-8-sig')
 
@@ -147,4 +149,3 @@ if __name__ == "__main__":
 # df.to_csv("glassdoor_accountant.csv", encoding='utf-8-sig')
 
 # bot.df.drop_duplicates(["job_title","company_name"])
-
