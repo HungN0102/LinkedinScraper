@@ -64,23 +64,35 @@ class GlassdoorScraper:
         soup = self.get_soup()
         matches = soup.find_all('li', class_=li_class)
         for match in matches:
-            company = match.find("div", class_=company_class)
-            company = company.get_text(separator=" ").strip()
+            try:
+                company = match.find("div", class_=company_class)
+                company = company.get_text(separator=" ").strip()
+            except:
+                company = None
 
-            job_title = match.find("a", {"data-test":job_class})
-            job_title = job_title.get_text(separator=" ").strip()
+            try:
+                job_title = match.find("a", {"data-test":job_class})
+                job_title = job_title.get_text(separator=" ").strip()
+            except:
+                job_title = None
 
-            location = match.find("span", class_=location_class)
-            location = location.get_text(separator=" ").strip()
+            try:
+                location = match.find("span", class_=location_class)
+                location = location.get_text(separator=" ").strip()
+            except:
+                location = None
 
-            old = match.find("div", {"data-test":old_class})
-            old = old.get_text(separator=" ").strip()
+            try:
+                old = match.find("div", {"data-test":old_class})
+                old = old.get_text(separator=" ").strip()
+            except:
+                old = None
 
             try:
                 salary = match.find("span", {"data-test": salary_class})
                 salary = salary.get_text(separator=" ").strip()
             except Exception as e:
-                self.warnings.append(e)
+                salary = None
 
             self.full_link = self.get_link(match.find("a",{"data-test":job_class}))
             soup2 = self.get_soup4(self.full_link)
@@ -100,7 +112,7 @@ class GlassdoorScraper:
         self.df = pd.DataFrame(self.rows, columns=["url", "job_title", "company_name", "location", "old", "salary", "job_details"])
         if self.to_save:
             self.df.to_csv(self.file_tosave, encoding='utf-8-sig')
-            
+
         self.driver.close()
         print("Finished")
 
@@ -135,3 +147,4 @@ if __name__ == "__main__":
 # df.to_csv("glassdoor_accountant.csv", encoding='utf-8-sig')
 
 # bot.df.drop_duplicates(["job_title","company_name"])
+
