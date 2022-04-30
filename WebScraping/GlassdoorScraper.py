@@ -3,6 +3,7 @@ import requests
 from selenium import webdriver
 import pandas as pd
 import time
+import csv
 from datetime import date
 
 class GlassdoorScraper:
@@ -71,18 +72,21 @@ class GlassdoorScraper:
                 company = company.get_text(separator=" ").strip()
             except:
                 company = None
+                print("Error company")
 
             try:
                 job_title = match.find("a", {"data-test":job_class})
                 job_title = job_title.get_text(separator=" ").strip()
             except:
                 job_title = None
+                print("Error job_title")
 
             try:
                 location = match.find("span", class_=location_class)
                 location = location.get_text(separator=" ").strip()
             except:
                 location = None
+                print("Error location")
 
             try:
                 old = match.find("div", {"data-test":old_class})
@@ -90,15 +94,21 @@ class GlassdoorScraper:
             except:
                 old = None
 
+
             try:
                 salary = match.find("span", {"data-test": salary_class})
                 salary = salary.get_text(separator=" ").strip()
             except Exception as e:
                 salary = None
+                print("Error salary")
 
-            self.full_link = self.get_link(match.find("a",{"data-test":job_class}))
-            soup2 = self.get_soup4(self.full_link)
-            job_details = soup2.find("div", class_=detail_class).get_text(separator=" ").strip()
+            try:
+                self.full_link = self.get_link(match.find("a",{"data-test":job_class}))
+                soup2 = self.get_soup4(self.full_link)
+                job_details = soup2.find("div", class_=detail_class).get_text(separator=" ").strip()
+            except:
+                job_details = None
+                print("Error details")
             self.rows.append([self.today, self.full_link, job_title, company, location, old, salary, job_details])
 
             print(len(self.rows))
@@ -113,22 +123,26 @@ class GlassdoorScraper:
 
         self.df = pd.DataFrame(self.rows, columns=["date","url", "job_title", "company_name", "location", "old", "salary", "job_details"])
         if self.to_save:
-            self.df.to_csv(self.file_tosave, encoding='utf-8-sig')
+            # self.df.to_csv(self.file_tosave, encoding='utf-8-sig')
+            with open(self.file_tosave,"a",newline="", encoding='utf-8-sig') as f:
+                for row in self.rows:
+                    csv_writer = csv.writer(f)
+                    csv_writer.writerow(row)
 
         self.driver.close()
         print("Finished")
 
 if __name__ == "__main__":
-    urls = ["https://www.glassdoor.co.uk/Job/london-data-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,19.htm",
-            "https://www.glassdoor.co.uk/Job/london-data-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,20.htm",
-            "https://www.glassdoor.co.uk/Job/london-backend-developer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm",
-            "https://www.glassdoor.co.uk/Job/london-business-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,23.htm",
-            "https://www.glassdoor.co.uk/Job/london-software-engineering-jobs-SRCH_IL.0,6_IC2671300_KO7,27.htm",
-            "https://www.glassdoor.co.uk/Job/london-marketing-jobs-SRCH_IL.0,6_IC2671300_KO7,16.htm",
-            "https://www.glassdoor.co.uk/Job/london-internal-audit-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm",
-            "https://www.glassdoor.co.uk/Job/london-equity-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm",
-            "https://www.glassdoor.co.uk/Job/london-accountant-jobs-SRCH_IL.0,6_IC2671300_KO7,17.htm",
-            "https://www.glassdoor.co.uk/Job/london-data-scientist-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm"]
+    urls = ["https://www.glassdoor.co.uk/Job/london-data-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,19.htm?includeNoSalaryJobs=true",
+            "https://www.glassdoor.co.uk/Job/london-data-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,20.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-backend-developer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=backend%2520developer&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-business-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,23.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=BUSINESS%2520ANALYST&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-software-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=SOFTWARE%2520ENGINEER&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-marketing-jobs-SRCH_IL.0,6_IC2671300_KO7,16.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=marketing&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-internal-audit-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=internal%2520audit&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-equity-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=equity%2520analyst&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-accountant-jobs-SRCH_IL.0,6_IC2671300_KO7,17.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=accountant&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
+            "https://www.glassdoor.co.uk/Job/london-data-scientist-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=data%2520scientist&typedLocation=London%252C%2520England&context=Jobs&dropdown=0"]
     file_tosaves = ["glassdoor_dataanalyst.csv",
                    "glassdoor_dataengineer.csv",
                    "glassdoor_backend.csv",
