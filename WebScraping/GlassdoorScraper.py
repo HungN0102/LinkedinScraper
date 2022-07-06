@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 import pandas as pd
 import time
 import csv
@@ -11,7 +12,7 @@ class GlassdoorScraper:
         self.url = url
         self.file_tosave = file_tosave
         self.pages = pages
-        self.to_save = to_save
+        self.to_save = to_save 
 
         self.URL = None
         self.rows = []
@@ -42,7 +43,7 @@ class GlassdoorScraper:
         return soup
 
     def get_soup4(self,url):
-        headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
         source = requests.get(url, headers=headers)
         soup = BeautifulSoup(source.content, 'html.parser')
         return soup
@@ -50,6 +51,10 @@ class GlassdoorScraper:
     def next_page(self):
         element = self.driver.find_element_by_xpath("//ul/li[29]")
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
+        try:
+            self.driver.find_element(By.ID,"onetrust-accept-btn-handler").click()
+        except:
+            pass
         self.driver.find_element_by_class_name("nextButton").click()
         time.sleep(4)
 
@@ -96,7 +101,6 @@ class GlassdoorScraper:
             except:
                 old = None
 
-
             try:
                 salary = match.find("span", {"data-test": salary_class})
                 salary = salary.get_text(separator=" ").strip()
@@ -135,31 +139,8 @@ class GlassdoorScraper:
         print("Finished")
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     urls = ["https://www.glassdoor.co.uk/Job/london-software-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=software%2520engineer&typedLocation=London%252C%2520England&context=Jobs&dropdown=0"]
     file_tosaves = ["glassdoor_swe.csv"]
-=======
-    urls = ["https://www.glassdoor.co.uk/Job/london-data-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,19.htm?includeNoSalaryJobs=true",
-            "https://www.glassdoor.co.uk/Job/london-data-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,20.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-backend-developer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=backend%2520developer&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-business-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,23.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=BUSINESS%2520ANALYST&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-software-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=SOFTWARE%2520ENGINEER&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-marketing-jobs-SRCH_IL.0,6_IC2671300_KO7,16.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=marketing&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-internal-audit-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=internal%2520audit&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-equity-analyst-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=equity%2520analyst&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-accountant-jobs-SRCH_IL.0,6_IC2671300_KO7,17.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=accountant&typedLocation=London%252C%2520England&context=Jobs&dropdown=0",
-            "https://www.glassdoor.co.uk/Job/london-data-scientist-jobs-SRCH_IL.0,6_IC2671300_KO7,21.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=data%2520scientist&typedLocation=London%252C%2520England&context=Jobs&dropdown=0"]
-    file_tosaves = ["glassdoor_dataanalyst.csv",
-                   "glassdoor_dataengineer.csv",
-                   "glassdoor_backend.csv",
-                   "glassdoor_businessanalyst.csv",
-                   "glassdoor_swe.csv",
-                   "glassdoor_marketing.csv",
-                   "glassdoor_internalaudit.csv",
-                   "glassdoor_equityanalyst.csv",
-                   "glassdoor_accountant.csv",
-                   "glassdoor_datascientist.csv"]
->>>>>>> 2964ff8339e82dc1ff1f7ba96f05bd3db0dabeed
 
     url_to_file_lists = [(x, y, 6, True) for x, y in zip(urls, file_tosaves)]
 
