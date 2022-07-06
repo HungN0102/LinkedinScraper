@@ -160,7 +160,7 @@ def get_data(self, li_class = 'react-job-listing',
                  location_class="css-1buaf54",
                  old_class = "job-age",
                  salary_class = "detailSalary",
-                 detail_class = "css-58vpdc ecgq1xb5"):
+                 detail_class = "css-58vpdc"):
 
         soup = self.get_soup()
         matches = soup.find_all('li', class_=li_class)
@@ -177,4 +177,6 @@ def get_data(self, li_class = 'react-job-listing',
 get_data(self=bot)
 
 
-get_soup4("https://www.glassdoor.co.uk/job-listing/graduate-software-engineer-inspiring-interns-JV_IC2671300_KO0,26_KE27,44.htm?jl=1007923509197&pos=130&ao=1110586&s=58&guid=00000181d41ebc2f8384edbd1963a7e4&src=GD_JOB_AD&t=SR&vt=w&ea=1&cs=1_3c841671&cb=1657121193662&jobListingId=1007923509197&cpc=9908D8D4413DBB8A&jrtk=3-0-1g7a1tf7pkckl801-1g7a1tf87g2e4800-9aff2e8847d2f5c0--6NYlbfkN0DzwreoEVFOkXRcFH1aYDKs9BsTnM4S4dXogYMNQuxRsWEvU3NmJBXmQipkwYVPqOwydgP7d-B53NJyCOp7dB7jDvcZSg6QNGeTSuL46B9ohBKI2wJVTWx3FQgHEAIzCPpVbw6a0m-W_QLxEBeCA9ubwwxoXgSCBCqiMJ7cAg41vbW6CnUYc89YMxYZ6YLxrzSJprp05vF7bzCLpuMAu7ITf422AaK-y9VGIOCkAI07xlrVsb5NOxThfCzH4s5zgLXqXHFqJ3XmhnvaBF7ot2RRuePqPspBDJrINTJkf0IGfcYDlmNRdftTTvt23gT6mfcKqJVleILmqbs0_HbwLsOHtT6CF9YXNBQcPvOG-Br1VgiX5PfC7yi_DLWoiUY_SLIxZP794hA2Wp6ri6ZT-TwL7wAs3_PG6UA4KTBJDhGPYX-Mx4eJV2AdVuI121SnmOTdgPbFUzaenOsyMK39rSbl2LEhi4ry0F3o2AOnxo-vXx28749lrW0mbcCAn0vHkjT5mB4t3jnG_g%3D%3D&ctt=1657121592246")
+soup = get_soup4("https://www.glassdoor.co.uk/job-listing/graduate-software-engineer-inspiring-interns-JV_IC2671300_KO0,26_KE27,44.htm?jl=1007923509197&pos=130&ao=1110586&s=58&guid=00000181d41ebc2f8384edbd1963a7e4&src=GD_JOB_AD&t=SR&vt=w&ea=1&cs=1_3c841671&cb=1657121193662&jobListingId=1007923509197&cpc=9908D8D4413DBB8A&jrtk=3-0-1g7a1tf7pkckl801-1g7a1tf87g2e4800-9aff2e8847d2f5c0--6NYlbfkN0DzwreoEVFOkXRcFH1aYDKs9BsTnM4S4dXogYMNQuxRsWEvU3NmJBXmQipkwYVPqOwydgP7d-B53NJyCOp7dB7jDvcZSg6QNGeTSuL46B9ohBKI2wJVTWx3FQgHEAIzCPpVbw6a0m-W_QLxEBeCA9ubwwxoXgSCBCqiMJ7cAg41vbW6CnUYc89YMxYZ6YLxrzSJprp05vF7bzCLpuMAu7ITf422AaK-y9VGIOCkAI07xlrVsb5NOxThfCzH4s5zgLXqXHFqJ3XmhnvaBF7ot2RRuePqPspBDJrINTJkf0IGfcYDlmNRdftTTvt23gT6mfcKqJVleILmqbs0_HbwLsOHtT6CF9YXNBQcPvOG-Br1VgiX5PfC7yi_DLWoiUY_SLIxZP794hA2Wp6ri6ZT-TwL7wAs3_PG6UA4KTBJDhGPYX-Mx4eJV2AdVuI121SnmOTdgPbFUzaenOsyMK39rSbl2LEhi4ry0F3o2AOnxo-vXx28749lrW0mbcCAn0vHkjT5mB4t3jnG_g%3D%3D&ctt=1657121592246")
+
+soup.find("div", class_=detail_class).get_text(separator=" ").strip()
