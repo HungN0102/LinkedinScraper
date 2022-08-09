@@ -3,6 +3,7 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pandas as pd
+import os
 import time
 import csv
 from datetime import date
@@ -119,8 +120,14 @@ class GlassdoorScraper:
 
             print(len(self.rows))
 
+    def create_csv(self, file):
+        if file not in os.listdir():
+            df_create = pd.DataFrame(columns=["date","url", "job_title", "company_name", "location", "old", "salary", "job_details"])
+            df_create.to_csv(file,index=False)
+    
     def run_me(self):
         print("Starting")
+        self.create_csv(self.file_tosave)
         self.open_website()
 
         for i in range(self.pages):
@@ -139,8 +146,15 @@ class GlassdoorScraper:
         print("Finished")
 
 if __name__ == "__main__":
-    urls = ["https://www.glassdoor.co.uk/Job/london-software-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=software%2520engineer&typedLocation=London%252C%2520England&context=Jobs&dropdown=0"]
-    file_tosaves = ["glassdoor_swe.csv"]
+    urls = ["https://www.glassdoor.co.uk/Job/london-software-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=software%2520engineer&typedLocation=London%252C%2520England&context=Jobs&dropdown=0"
+            ,"https://www.glassdoor.co.uk/Job/london-backend-developer-jobs-SRCH_IL.0,6_IC2671300_KO7,24.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=&typedLocation=London%252C%2520England&context=Jobs&dropdown=0"
+            ,"https://www.glassdoor.co.uk/Job/london-data-engineer-jobs-SRCH_IL.0,6_IC2671300_KO7,20.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=data%2520engineer&typedLocation=London%252C%2520England&context=Jobs&dropdown=0"
+            ]
+    
+    file_tosaves = ["glassdoor_swe.csv"
+                    ,"glassdoor_backend.csv"
+                    ,"glassdoor_dataengineer.csv"
+                    ]
 
     url_to_file_lists = [(x, y, 6, True) for x, y in zip(urls, file_tosaves)]
 
