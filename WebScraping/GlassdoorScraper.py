@@ -123,7 +123,7 @@ class GlassdoorScraper:
     def create_csv(self, file):
         if file not in os.listdir():
             df_create = pd.DataFrame(columns=["date","url", "job_title", "company_name", "location", "old", "salary", "job_details"])
-            df_create.to_csv(file,index=False)
+            df_create.to_csv(file,index=False, encoding='utf-8-sig')
     
     def run_me(self):
         print("Starting")
